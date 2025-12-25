@@ -1,0 +1,2064 @@
+{
+  "address": "HvQ8c3BBCsibJpH74UDXbvqEidJymzFYyGjNjRn7MYwC",
+  "metadata": {
+    "name": "federated_ai",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "cancel_round",
+      "discriminator": [
+        82,
+        70,
+        134,
+        54,
+        46,
+        96,
+        148,
+        8
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "round"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "check_round",
+      "discriminator": [
+        149,
+        31,
+        70,
+        221,
+        137,
+        5,
+        34,
+        216
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_reward",
+      "discriminator": [
+        149,
+        95,
+        181,
+        242,
+        94,
+        90,
+        158,
+        162
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  98,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              },
+              {
+                "kind": "account",
+                "path": "trainer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trainer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "submission"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_round",
+      "discriminator": [
+        180,
+        73,
+        23,
+        99,
+        186,
+        205,
+        14,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_validator_fee",
+      "discriminator": [
+        16,
+        99,
+        148,
+        87,
+        60,
+        57,
+        250,
+        145
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "complete_validation",
+      "discriminator": [
+        118,
+        252,
+        253,
+        49,
+        62,
+        21,
+        243,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "create_round",
+      "discriminator": [
+        229,
+        218,
+        236,
+        169,
+        231,
+        80,
+        134,
+        112
+      ],
+      "accounts": [
+        {
+          "name": "round_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        },
+        {
+          "name": "model_cid",
+          "type": "string"
+        },
+        {
+          "name": "dataset",
+          "type": {
+            "defined": {
+              "name": "Dataset"
+            }
+          }
+        },
+        {
+          "name": "reward_amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_round",
+      "discriminator": [
+        239,
+        160,
+        254,
+        11,
+        254,
+        144,
+        53,
+        148
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        },
+        {
+          "name": "results",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "TrainerResult"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "round_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "join_round",
+      "discriminator": [
+        191,
+        222,
+        86,
+        25,
+        234,
+        174,
+        157,
+        249
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  98,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              },
+              {
+                "kind": "account",
+                "path": "trainer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trainer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_contribution",
+      "discriminator": [
+        229,
+        177,
+        23,
+        174,
+        242,
+        180,
+        180,
+        242
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  98,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              },
+              {
+                "kind": "account",
+                "path": "submission.trainer",
+                "account": "Submission"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        },
+        {
+          "name": "contribution_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "start_training",
+      "discriminator": [
+        200,
+        220,
+        11,
+        27,
+        179,
+        180,
+        115,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        },
+        {
+          "name": "baseline_score",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "submit_gradients",
+      "discriminator": [
+        28,
+        139,
+        63,
+        209,
+        251,
+        221,
+        239,
+        54
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  117,
+                  98,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              },
+              {
+                "kind": "account",
+                "path": "trainer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "trainer",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "submission"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        },
+        {
+          "name": "gradient_cid",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Round",
+      "discriminator": [
+        87,
+        127,
+        165,
+        51,
+        73,
+        78,
+        116,
+        174
+      ]
+    },
+    {
+      "name": "RoundCounter",
+      "discriminator": [
+        244,
+        2,
+        165,
+        240,
+        168,
+        10,
+        1,
+        238
+      ]
+    },
+    {
+      "name": "Submission",
+      "discriminator": [
+        58,
+        194,
+        159,
+        158,
+        75,
+        102,
+        178,
+        197
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "GradientsSubmitted",
+      "discriminator": [
+        236,
+        184,
+        128,
+        135,
+        145,
+        253,
+        187,
+        13
+      ]
+    },
+    {
+      "name": "RewardClaimed",
+      "discriminator": [
+        49,
+        28,
+        87,
+        84,
+        158,
+        48,
+        229,
+        175
+      ]
+    },
+    {
+      "name": "RoundCancelled",
+      "discriminator": [
+        238,
+        141,
+        105,
+        175,
+        182,
+        158,
+        15,
+        7
+      ]
+    },
+    {
+      "name": "RoundCreated",
+      "discriminator": [
+        16,
+        19,
+        68,
+        117,
+        87,
+        198,
+        7,
+        124
+      ]
+    },
+    {
+      "name": "RoundExpired",
+      "discriminator": [
+        93,
+        120,
+        89,
+        173,
+        92,
+        124,
+        70,
+        38
+      ]
+    },
+    {
+      "name": "RoundFinalized",
+      "discriminator": [
+        43,
+        187,
+        17,
+        193,
+        36,
+        241,
+        48,
+        82
+      ]
+    },
+    {
+      "name": "TrainerJoined",
+      "discriminator": [
+        44,
+        10,
+        196,
+        134,
+        184,
+        177,
+        89,
+        86
+      ]
+    },
+    {
+      "name": "TrainingEnded",
+      "discriminator": [
+        24,
+        51,
+        159,
+        115,
+        202,
+        93,
+        84,
+        187
+      ]
+    },
+    {
+      "name": "TrainingStarted",
+      "discriminator": [
+        113,
+        3,
+        210,
+        49,
+        108,
+        89,
+        189,
+        82
+      ]
+    },
+    {
+      "name": "ValidationCompleted",
+      "discriminator": [
+        74,
+        205,
+        28,
+        198,
+        23,
+        174,
+        241,
+        148
+      ]
+    },
+    {
+      "name": "ValidatorClaimed",
+      "discriminator": [
+        144,
+        103,
+        240,
+        193,
+        151,
+        183,
+        239,
+        61
+      ]
+    },
+    {
+      "name": "ValidatorFeeClaimed",
+      "discriminator": [
+        16,
+        180,
+        56,
+        30,
+        251,
+        255,
+        85,
+        251
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidCid",
+      "msg": "Invalid IPFS CID length (must be 46-64 characters)"
+    },
+    {
+      "code": 6001,
+      "name": "ZeroReward",
+      "msg": "Reward amount must be greater than zero"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidRoundId",
+      "msg": "Invalid round ID"
+    },
+    {
+      "code": 6003,
+      "name": "CannotCancel",
+      "msg": "Cannot cancel round in current status"
+    },
+    {
+      "code": 6004,
+      "name": "RoundNotWaitingValidator",
+      "msg": "Round is not waiting for validator"
+    },
+    {
+      "code": 6005,
+      "name": "ValidatorDeadlinePassed",
+      "msg": "Validator deadline has passed"
+    },
+    {
+      "code": 6006,
+      "name": "RoundNotWaitingTrainers",
+      "msg": "Round is not waiting for trainers"
+    },
+    {
+      "code": 6007,
+      "name": "NotValidator",
+      "msg": "Only the validator can perform this action"
+    },
+    {
+      "code": 6008,
+      "name": "NoTrainers",
+      "msg": "No trainers have joined"
+    },
+    {
+      "code": 6009,
+      "name": "JoinDeadlinePassed",
+      "msg": "Join deadline has passed"
+    },
+    {
+      "code": 6010,
+      "name": "MaxTrainersReached",
+      "msg": "Maximum number of trainers reached"
+    },
+    {
+      "code": 6011,
+      "name": "RoundNotTraining",
+      "msg": "Round is not in training status"
+    },
+    {
+      "code": 6012,
+      "name": "SubmitDeadlinePassed",
+      "msg": "Submit deadline has passed"
+    },
+    {
+      "code": 6013,
+      "name": "AlreadySubmitted",
+      "msg": "Gradients already submitted"
+    },
+    {
+      "code": 6014,
+      "name": "RoundNotCompleted",
+      "msg": "Round is not completed"
+    },
+    {
+      "code": 6015,
+      "name": "NotSubmitted",
+      "msg": "Gradients not submitted"
+    },
+    {
+      "code": 6016,
+      "name": "RewardAlreadyClaimed",
+      "msg": "Reward already claimed"
+    },
+    {
+      "code": 6017,
+      "name": "NoContribution",
+      "msg": "No contribution assigned"
+    },
+    {
+      "code": 6018,
+      "name": "FeeAlreadyClaimed",
+      "msg": "Validator fee already claimed"
+    },
+    {
+      "code": 6019,
+      "name": "InvalidContributionSum",
+      "msg": "Contribution percentages must sum to 10000 (100%)"
+    },
+    {
+      "code": 6020,
+      "name": "RoundNotValidating",
+      "msg": "Round is not in validating status"
+    }
+  ],
+  "types": [
+    {
+      "name": "Dataset",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Cifar10"
+          },
+          {
+            "name": "Cifar100"
+          },
+          {
+            "name": "Mnist"
+          },
+          {
+            "name": "FashionMnist"
+          },
+          {
+            "name": "Emnist"
+          },
+          {
+            "name": "Kmnist"
+          },
+          {
+            "name": "Food101"
+          },
+          {
+            "name": "Flowers102"
+          },
+          {
+            "name": "StanfordDogs"
+          },
+          {
+            "name": "StanfordCars"
+          },
+          {
+            "name": "OxfordPets"
+          },
+          {
+            "name": "CatsVsDogs"
+          },
+          {
+            "name": "Eurosat"
+          },
+          {
+            "name": "Svhn"
+          },
+          {
+            "name": "Caltech101"
+          },
+          {
+            "name": "Caltech256"
+          },
+          {
+            "name": "Imdb"
+          },
+          {
+            "name": "Sst2"
+          },
+          {
+            "name": "Sst5"
+          },
+          {
+            "name": "YelpReviews"
+          },
+          {
+            "name": "AmazonPolarity"
+          },
+          {
+            "name": "RottenTomatoes"
+          },
+          {
+            "name": "FinancialSentiment"
+          },
+          {
+            "name": "TweetSentiment"
+          },
+          {
+            "name": "AgNews"
+          },
+          {
+            "name": "Dbpedia"
+          },
+          {
+            "name": "YahooAnswers"
+          },
+          {
+            "name": "TwentyNewsgroups"
+          },
+          {
+            "name": "SmsSpam"
+          },
+          {
+            "name": "HateSpeech"
+          },
+          {
+            "name": "CivilComments"
+          },
+          {
+            "name": "Toxicity"
+          },
+          {
+            "name": "ClincIntent"
+          },
+          {
+            "name": "Banking77"
+          },
+          {
+            "name": "SnipsIntent"
+          },
+          {
+            "name": "Conll2003"
+          },
+          {
+            "name": "Wnut17"
+          },
+          {
+            "name": "Squad"
+          },
+          {
+            "name": "SquadV2"
+          },
+          {
+            "name": "TriviaQa"
+          },
+          {
+            "name": "BoolQ"
+          },
+          {
+            "name": "CommonsenseQa"
+          },
+          {
+            "name": "Stsb"
+          },
+          {
+            "name": "Mrpc"
+          },
+          {
+            "name": "Qqp"
+          },
+          {
+            "name": "Snli"
+          },
+          {
+            "name": "Mnli"
+          },
+          {
+            "name": "CnnDailymail"
+          },
+          {
+            "name": "Xsum"
+          },
+          {
+            "name": "Samsum"
+          },
+          {
+            "name": "SpeechCommands"
+          },
+          {
+            "name": "Librispeech"
+          },
+          {
+            "name": "CommonVoice"
+          },
+          {
+            "name": "Gtzan"
+          },
+          {
+            "name": "Esc50"
+          },
+          {
+            "name": "Urbansound8k"
+          },
+          {
+            "name": "Nsynth"
+          },
+          {
+            "name": "Ravdess"
+          },
+          {
+            "name": "CremaD"
+          },
+          {
+            "name": "Iemocap"
+          },
+          {
+            "name": "Iris"
+          },
+          {
+            "name": "Wine"
+          },
+          {
+            "name": "Diabetes"
+          },
+          {
+            "name": "BreastCancer"
+          },
+          {
+            "name": "CaliforniaHousing"
+          },
+          {
+            "name": "AdultIncome"
+          },
+          {
+            "name": "BankMarketing"
+          },
+          {
+            "name": "CreditDefault"
+          },
+          {
+            "name": "Titanic"
+          },
+          {
+            "name": "HeartDisease"
+          },
+          {
+            "name": "ChestXray"
+          },
+          {
+            "name": "SkinCancer"
+          },
+          {
+            "name": "DiabeticRetinopathy"
+          },
+          {
+            "name": "BrainTumor"
+          },
+          {
+            "name": "Malaria"
+          },
+          {
+            "name": "BloodCells"
+          },
+          {
+            "name": "CovidXray"
+          },
+          {
+            "name": "PubmedQa"
+          },
+          {
+            "name": "MedQa"
+          },
+          {
+            "name": "Electricity"
+          },
+          {
+            "name": "Weather"
+          },
+          {
+            "name": "StockPrices"
+          },
+          {
+            "name": "EcgHeartbeat"
+          },
+          {
+            "name": "CodeSearchNet"
+          },
+          {
+            "name": "Humaneval"
+          },
+          {
+            "name": "Mbpp"
+          },
+          {
+            "name": "Spider"
+          },
+          {
+            "name": "Cora"
+          },
+          {
+            "name": "Citeseer"
+          },
+          {
+            "name": "Qm9"
+          },
+          {
+            "name": "NslKdd"
+          },
+          {
+            "name": "CreditCardFraud"
+          },
+          {
+            "name": "Phishing"
+          },
+          {
+            "name": "Movielens1m"
+          },
+          {
+            "name": "Movielens100k"
+          },
+          {
+            "name": "Xnli"
+          },
+          {
+            "name": "AmazonReviewsMulti"
+          },
+          {
+            "name": "Sberquad"
+          },
+          {
+            "name": "Custom"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExpireReason",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "NoValidator"
+          },
+          {
+            "name": "NoTrainers"
+          },
+          {
+            "name": "NoSubmissions"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GradientsSubmitted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "trainer",
+            "type": "pubkey"
+          },
+          {
+            "name": "gradient_cid",
+            "type": "string"
+          },
+          {
+            "name": "submissions_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RewardClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "trainer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Round",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "model_cid",
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "type": {
+              "defined": {
+                "name": "Dataset"
+              }
+            }
+          },
+          {
+            "name": "reward_amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "RoundStatus"
+              }
+            }
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "validator_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "baseline_score",
+            "type": "u32"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "validator_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "join_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "submit_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "trainers_count",
+            "type": "u8"
+          },
+          {
+            "name": "submissions_count",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundCounter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "count",
+            "type": "u64"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "model_cid",
+            "type": "string"
+          },
+          {
+            "name": "dataset",
+            "type": {
+              "defined": {
+                "name": "Dataset"
+              }
+            }
+          },
+          {
+            "name": "reward_amount",
+            "type": "u64"
+          },
+          {
+            "name": "validator_deadline",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundExpired",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "reason",
+            "type": {
+              "defined": {
+                "name": "ExpireReason"
+              }
+            }
+          },
+          {
+            "name": "refund_amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "validator_fee",
+            "type": "u64"
+          },
+          {
+            "name": "trainers_pool",
+            "type": "u64"
+          },
+          {
+            "name": "results",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TrainerResult"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "WaitingValidator"
+          },
+          {
+            "name": "WaitingTrainers"
+          },
+          {
+            "name": "Training"
+          },
+          {
+            "name": "Validating"
+          },
+          {
+            "name": "Completed"
+          },
+          {
+            "name": "Expired"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Submission",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "trainer",
+            "type": "pubkey"
+          },
+          {
+            "name": "gradient_cid",
+            "type": "string"
+          },
+          {
+            "name": "submitted",
+            "type": "bool"
+          },
+          {
+            "name": "contribution_bps",
+            "type": "u16"
+          },
+          {
+            "name": "reward_claimed",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrainerJoined",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "trainer",
+            "type": "pubkey"
+          },
+          {
+            "name": "trainers_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrainerResult",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "trainer",
+            "type": "pubkey"
+          },
+          {
+            "name": "contribution_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrainingEnded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "submissions_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TrainingStarted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "baseline_score",
+            "type": "u32"
+          },
+          {
+            "name": "submit_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "trainers_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ValidationCompleted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ValidatorClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "join_deadline",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ValidatorFeeClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
