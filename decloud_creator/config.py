@@ -52,6 +52,7 @@ class Config:
         
         if not self.idl_path:
             self.idl_path = self._find_idl()
+        self.idl_path = self.idl_path.replace("\\", "/") 
     
     def _find_idl(self) -> str:
         package_dir = os.path.dirname(os.path.abspath(__file__))
