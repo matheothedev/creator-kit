@@ -159,6 +159,9 @@
     },
     {
       "name": "claim_reward",
+      "docs": [
+        "Trainer claims reward (with 2% fee, 50% to referrer if exists)"
+      ],
       "discriminator": [
         149,
         95,
@@ -243,6 +246,15 @@
               }
             ]
           }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "referrer",
+          "writable": true,
+          "optional": true
         },
         {
           "name": "trainer",
@@ -370,6 +382,15 @@
           }
         },
         {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "referrer",
+          "writable": true,
+          "optional": true
+        },
+        {
           "name": "validator",
           "writable": true,
           "signer": true
@@ -388,6 +409,9 @@
     },
     {
       "name": "complete_validation",
+      "docs": [
+        "Complete validation (with automatic validator payout and 2% to Treasury)"
+      ],
       "discriminator": [
         118,
         252,
@@ -442,6 +466,15 @@
               }
             ]
           }
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "referrer",
+          "writable": true,
+          "optional": true
         },
         {
           "name": "validator",
@@ -1292,6 +1325,11 @@
       "code": 6020,
       "name": "RoundNotValidating",
       "msg": "Round is not in validating status"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury address"
     }
   ],
   "types": [
@@ -1656,6 +1694,14 @@
           },
           {
             "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_fee",
+            "type": "u64"
+          },
+          {
+            "name": "referrer_fee",
             "type": "u64"
           }
         ]
@@ -2055,6 +2101,14 @@
           },
           {
             "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_fee",
+            "type": "u64"
+          },
+          {
+            "name": "referrer_fee",
             "type": "u64"
           }
         ]
