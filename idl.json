@@ -8,6 +8,84 @@
   },
   "instructions": [
     {
+      "name": "abort_round",
+      "discriminator": [
+        15,
+        165,
+        47,
+        198,
+        108,
+        207,
+        150,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "round",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  117,
+                  110,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "round_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true
+        },
+        {
+          "name": "validator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "round_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "cancel_round",
       "discriminator": [
         82,
@@ -1090,6 +1168,19 @@
       ]
     },
     {
+      "name": "RoundAborted",
+      "discriminator": [
+        90,
+        160,
+        161,
+        65,
+        133,
+        85,
+        69,
+        76
+      ]
+    },
+    {
       "name": "RoundCancelled",
       "discriminator": [
         238,
@@ -1330,6 +1421,16 @@
       "code": 6021,
       "name": "InvalidTreasury",
       "msg": "Invalid treasury address"
+    },
+    {
+      "code": 6022,
+      "name": "CannotAbort",
+      "msg": "Cannot abort round in current status"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidCreator",
+      "msg": "Invalid creator address"
     }
   ],
   "types": [
@@ -1787,6 +1888,26 @@
           {
             "name": "vault_bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundAborted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "round_id",
+            "type": "u64"
+          },
+          {
+            "name": "validator",
+            "type": "pubkey"
+          },
+          {
+            "name": "refund_amount",
+            "type": "u64"
           }
         ]
       }
