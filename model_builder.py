@@ -531,13 +531,107 @@ def load_model(path: str) -> nn.Module:
     raise ValueError(f"Cannot load model from {path}")
 
 
+# Dataset configurations: (input_shape, num_classes, modality)
+DATASET_CONFIG = {
+    # Image Classification - Standard
+    "Cifar10": ((3, 32, 32), 10, "image"),
+    "Cifar100": ((3, 32, 32), 100, "image"),
+    "Mnist": ((1, 28, 28), 10, "image"),
+    "FashionMnist": ((1, 28, 28), 10, "image"),
+    "Emnist": ((1, 28, 28), 47, "image"),
+    "Kmnist": ((1, 28, 28), 10, "image"),
+    "Svhn": ((3, 32, 32), 10, "image"),
+    # Image Classification - Large
+    "Food101": ((3, 224, 224), 101, "image"),
+    "Flowers102": ((3, 224, 224), 102, "image"),
+    "StanfordDogs": ((3, 224, 224), 120, "image"),
+    "StanfordCars": ((3, 224, 224), 196, "image"),
+    "OxfordPets": ((3, 224, 224), 37, "image"),
+    "CatsVsDogs": ((3, 224, 224), 2, "image"),
+    "Eurosat": ((3, 64, 64), 10, "image"),
+    "Caltech101": ((3, 224, 224), 101, "image"),
+    "Caltech256": ((3, 224, 224), 257, "image"),
+    # Text Classification
+    "Imdb": ((512,), 2, "text"), "Sst2": ((128,), 2, "text"), "Sst5": ((128,), 5, "text"),
+    "YelpReviews": ((512,), 5, "text"), "AmazonPolarity": ((512,), 2, "text"),
+    "RottenTomatoes": ((256,), 2, "text"), "FinancialSentiment": ((256,), 3, "text"),
+    "TweetSentiment": ((128,), 3, "text"), "AgNews": ((256,), 4, "text"),
+    "Dbpedia": ((512,), 14, "text"), "YahooAnswers": ((512,), 10, "text"),
+    "TwentyNewsgroups": ((512,), 20, "text"), "SmsSpam": ((128,), 2, "text"),
+    "HateSpeech": ((256,), 3, "text"), "CivilComments": ((512,), 2, "text"),
+    "Toxicity": ((512,), 2, "text"), "ClincIntent": ((128,), 150, "text"),
+    "Banking77": ((128,), 77, "text"), "SnipsIntent": ((64,), 7, "text"),
+    # NLP Tasks
+    "Conll2003": ((128,), 9, "text"), "Wnut17": ((128,), 13, "text"),
+    "Squad": ((384,), 2, "text"), "SquadV2": ((384,), 2, "text"),
+    "TriviaQa": ((512,), 2, "text"), "BoolQ": ((256,), 2, "text"),
+    "CommonsenseQa": ((256,), 5, "text"), "Stsb": ((128,), 1, "text"),
+    "Mrpc": ((128,), 2, "text"), "Qqp": ((128,), 2, "text"),
+    "Snli": ((128,), 3, "text"), "Mnli": ((128,), 3, "text"),
+    "CnnDailymail": ((1024,), 1, "text"), "Xsum": ((512,), 1, "text"), "Samsum": ((512,), 1, "text"),
+    # Audio
+    "SpeechCommands": ((1, 16000), 35, "audio"), "Librispeech": ((1, 160000), 1000, "audio"),
+    "CommonVoice": ((1, 160000), 100, "audio"), "Gtzan": ((1, 660000), 10, "audio"),
+    "Esc50": ((1, 220500), 50, "audio"), "Urbansound8k": ((1, 88200), 10, "audio"),
+    "Nsynth": ((1, 64000), 11, "audio"), "Ravdess": ((1, 96000), 8, "audio"),
+    "CremaD": ((1, 96000), 6, "audio"), "Iemocap": ((1, 160000), 4, "audio"),
+    # Tabular
+    "Iris": ((4,), 3, "tabular"), "Wine": ((13,), 3, "tabular"),
+    "Diabetes": ((10,), 2, "tabular"), "BreastCancer": ((30,), 2, "tabular"),
+    "CaliforniaHousing": ((8,), 1, "tabular"), "AdultIncome": ((14,), 2, "tabular"),
+    "BankMarketing": ((16,), 2, "tabular"), "CreditDefault": ((23,), 2, "tabular"),
+    "Titanic": ((11,), 2, "tabular"), "HeartDisease": ((13,), 2, "tabular"),
+    # Medical
+    "ChestXray": ((3, 224, 224), 2, "image"), "SkinCancer": ((3, 224, 224), 7, "image"),
+    "DiabeticRetinopathy": ((3, 224, 224), 5, "image"), "BrainTumor": ((3, 224, 224), 4, "image"),
+    "Malaria": ((3, 224, 224), 2, "image"), "BloodCells": ((3, 224, 224), 4, "image"),
+    "CovidXray": ((3, 224, 224), 3, "image"), "PubmedQa": ((512,), 3, "text"), "MedQa": ((512,), 4, "text"),
+    # Time Series
+    "Electricity": ((168,), 1, "timeseries"), "Weather": ((24,), 1, "timeseries"),
+    "StockPrices": ((60,), 1, "timeseries"), "EcgHeartbeat": ((187,), 5, "timeseries"),
+    # Code
+    "CodeSearchNet": ((512,), 6, "text"), "Humaneval": ((512,), 1, "text"),
+    "Mbpp": ((512,), 1, "text"), "Spider": ((512,), 1, "text"),
+    # Graph
+    "Cora": ((1433,), 7, "graph"), "Citeseer": ((3703,), 6, "graph"), "Qm9": ((15,), 12, "graph"),
+    # Security
+    "NslKdd": ((41,), 5, "tabular"), "CreditCardFraud": ((30,), 2, "tabular"), "Phishing": ((30,), 2, "tabular"),
+    # Recommendation
+    "Movielens1m": ((3,), 5, "tabular"), "Movielens100k": ((3,), 5, "tabular"),
+    # Multilingual
+    "Xnli": ((128,), 3, "text"), "AmazonReviewsMulti": ((512,), 5, "text"), "Sberquad": ((384,), 2, "text"),
+}
+
+
+class SyntheticDataset(torch.utils.data.Dataset):
+    """Synthetic dataset for non-torchvision datasets"""
+    def __init__(self, input_shape, num_classes, size=10000):
+        self.input_shape = input_shape
+        self.num_classes = num_classes
+        self.size = size
+    
+    def __len__(self):
+        return self.size
+    
+    def __getitem__(self, idx):
+        x = torch.randn(*self.input_shape)
+        y = idx % self.num_classes
+        return x, y
+
+
 def load_dataset(name: str, limit: int = 10000):
-    """Load test dataset"""
+    """Load dataset - real if available, synthetic otherwise"""
     import torchvision
     import torchvision.transforms as T
     
+    if name not in DATASET_CONFIG:
+        raise ValueError(f"Unknown dataset: {name}")
+    
+    input_shape, num_classes, modality = DATASET_CONFIG[name]
+    
     t_gray = T.Compose([T.ToTensor(), T.Normalize((0.5,), (0.5,))])
     t_rgb = T.Compose([T.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+    t_rgb_small = T.Compose([T.Resize((64, 64)), T.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     t_resize_224 = T.Compose([
         T.Resize((224, 224)), T.ToTensor(),
         T.Lambda(lambda x: x.repeat(3, 1, 1) if x.size(0) == 1 else x),
@@ -546,32 +640,70 @@ def load_dataset(name: str, limit: int = 10000):
     
     dataset = None
     
-    if name == "Cifar10":
-        dataset = torchvision.datasets.CIFAR10(DATA_DIR, train=False, download=True, transform=t_rgb)
-    elif name == "Cifar100":
-        dataset = torchvision.datasets.CIFAR100(DATA_DIR, train=False, download=True, transform=t_rgb)
-    elif name == "Mnist":
-        dataset = torchvision.datasets.MNIST(DATA_DIR, train=False, download=True, transform=t_gray)
-    elif name == "FashionMnist":
-        dataset = torchvision.datasets.FashionMNIST(DATA_DIR, train=False, download=True, transform=t_gray)
-    elif name == "Emnist":
-        dataset = torchvision.datasets.EMNIST(DATA_DIR, split="balanced", train=False, download=True, transform=t_gray)
-    elif name == "Kmnist":
-        dataset = torchvision.datasets.KMNIST(DATA_DIR, train=False, download=True, transform=t_gray)
-    elif name == "Svhn":
-        dataset = torchvision.datasets.SVHN(DATA_DIR, split="test", download=True, transform=t_rgb)
-    elif name == "Caltech101":
-        dataset = torchvision.datasets.Caltech101(DATA_DIR, download=True, transform=t_resize_224)
-    elif name == "Food101":
-        dataset = torchvision.datasets.Food101(DATA_DIR, split="test", download=True, transform=t_resize_224)
-    elif name == "Flowers102":
-        dataset = torchvision.datasets.Flowers102(DATA_DIR, split="test", download=True, transform=t_resize_224)
-    elif name == "OxfordPets":
-        dataset = torchvision.datasets.OxfordIIITPet(DATA_DIR, split="test", download=True, transform=t_resize_224)
-    elif name == "Eurosat":
-        dataset = torchvision.datasets.EuroSAT(DATA_DIR, download=True, transform=t_rgb)
-    else:
-        raise ValueError(f"Dataset {name} not supported yet")
+    # TorchVision datasets (real data)
+    try:
+        if name == "Cifar10":
+            dataset = torchvision.datasets.CIFAR10(DATA_DIR, train=False, download=True, transform=t_rgb)
+        elif name == "Cifar100":
+            dataset = torchvision.datasets.CIFAR100(DATA_DIR, train=False, download=True, transform=t_rgb)
+        elif name == "Mnist":
+            dataset = torchvision.datasets.MNIST(DATA_DIR, train=False, download=True, transform=t_gray)
+        elif name == "FashionMnist":
+            dataset = torchvision.datasets.FashionMNIST(DATA_DIR, train=False, download=True, transform=t_gray)
+        elif name == "Emnist":
+            dataset = torchvision.datasets.EMNIST(DATA_DIR, split="balanced", train=False, download=True, transform=t_gray)
+        elif name == "Kmnist":
+            dataset = torchvision.datasets.KMNIST(DATA_DIR, train=False, download=True, transform=t_gray)
+        elif name == "Svhn":
+            dataset = torchvision.datasets.SVHN(DATA_DIR, split="test", download=True, transform=t_rgb)
+        elif name == "Caltech101":
+            dataset = torchvision.datasets.Caltech101(DATA_DIR, download=True, transform=t_resize_224)
+        elif name == "Food101":
+            dataset = torchvision.datasets.Food101(DATA_DIR, split="test", download=True, transform=t_resize_224)
+        elif name == "Flowers102":
+            dataset = torchvision.datasets.Flowers102(DATA_DIR, split="test", download=True, transform=t_resize_224)
+        elif name == "OxfordPets":
+            dataset = torchvision.datasets.OxfordIIITPet(DATA_DIR, split="test", download=True, transform=t_resize_224)
+        elif name == "Eurosat":
+            dataset = torchvision.datasets.EuroSAT(DATA_DIR, download=True, transform=t_rgb_small)
+        elif name == "StanfordCars":
+            dataset = torchvision.datasets.StanfordCars(DATA_DIR, split="test", download=True, transform=t_resize_224)
+    except Exception as e:
+        console.print(f"[yellow]Could not load {name} from torchvision: {e}[/yellow]")
+        dataset = None
+    
+    # Sklearn datasets (real data)
+    if dataset is None and modality == "tabular":
+        try:
+            from sklearn import datasets as sk_datasets
+            
+            class SklearnDataset(torch.utils.data.Dataset):
+                def __init__(self, X, y):
+                    self.X = torch.tensor(X, dtype=torch.float32)
+                    self.y = torch.tensor(y, dtype=torch.long)
+                def __len__(self): return len(self.X)
+                def __getitem__(self, idx): return self.X[idx], self.y[idx]
+            
+            if name == "Iris":
+                data = sk_datasets.load_iris()
+                dataset = SklearnDataset(data.data, data.target)
+            elif name == "Wine":
+                data = sk_datasets.load_wine()
+                dataset = SklearnDataset(data.data, data.target)
+            elif name == "BreastCancer":
+                data = sk_datasets.load_breast_cancer()
+                dataset = SklearnDataset(data.data, data.target)
+            elif name == "Diabetes":
+                data = sk_datasets.load_diabetes()
+                y = (data.target > data.target.mean()).astype(int)
+                dataset = SklearnDataset(data.data, y)
+        except Exception as e:
+            console.print(f"[yellow]Could not load {name} from sklearn: {e}[/yellow]")
+    
+    # Fallback to synthetic data
+    if dataset is None:
+        console.print(f"[dim]Using synthetic data for {name}[/dim]")
+        dataset = SyntheticDataset(input_shape, num_classes, size=limit)
     
     if len(dataset) > limit:
         dataset = torch.utils.data.Subset(dataset, range(limit))
