@@ -75,6 +75,7 @@ class DeCloudCreator:
         model_cid: str,
         dataset: str,
         reward_sol: float,
+        min_trainer_rating: float = 5.0,  # NEW: minimum rating (1.0 - 5.0 stars)
     ) -> Dict[str, Any]:
         """
         Create a new training round
@@ -83,19 +84,28 @@ class DeCloudCreator:
             model_cid: IPFS CID of model package
             dataset: Dataset name
             reward_sol: Reward amount in SOL
+            min_trainer_rating: Minimum trainer rating (1.0 - 5.0 stars, default 5.0 = no restriction)
         
         Returns:
             {"success": bool, "round_id": int, "tx": str} or {"error": str}
         """
         try:
             reward_lamports = int(reward_sol * 1e9)
+            # Convert float rating (1.0-5.0) to internal format (100-500)
+            min_rating_internal = int(min_trainer_rating * 100)
+            
+            if min_rating_internal < 100 or min_rating_internal > 500:
+                return {"error": "min_trainer_rating must be between 1.0 and 5.0"}
             
             console.print(f"[cyan]Creating round...[/cyan]")
             console.print(f"[dim]  Dataset: {dataset}[/dim]")
             console.print(f"[dim]  Reward: {reward_sol} SOL[/dim]")
+            console.print(f"[dim]  Min Trainer Rating: {min_trainer_rating:.2f} ★[/dim]")
             console.print(f"[dim]  Model CID: {model_cid[:30]}...[/dim]")
             
-            tx, round_id = self.solana.create_round(model_cid, dataset, reward_lamports)
+            tx, round_id = self.solana.create_round(
+                model_cid, dataset, reward_lamports, min_rating_internal
+            )
             
             # Track locally
             config.track_round(round_id, model_cid)
@@ -288,12 +298,14 @@ class DeCloudCreator:
         table.add_column("ID", style="cyan")
         table.add_column("Dataset", style="yellow")
         table.add_column("Reward", style="green")
+        table.add_column("Min ★", style="magenta")
         table.add_column("Pre", style="blue")
-        table.add_column("Trainers", style="magenta")
+        table.add_column("Trainers", style="white")
         table.add_column("Status", style="white")
         
         for round_info in rounds[:limit]:
             reward_sol = round_info.reward_amount / 1e9
+            min_rating = round_info.min_trainer_rating / 100
             
             status_colors = {
                 "Active": "[yellow]Active[/yellow]",
@@ -306,6 +318,7 @@ class DeCloudCreator:
                 str(round_info.id),
                 round_info.dataset,
                 f"{reward_sol:.4f}",
+                f"{min_rating:.2f}",
                 str(round_info.pre_count),
                 str(round_info.gradients_count),
                 status,
@@ -327,12 +340,15 @@ class DeCloudCreator:
         
         table.add_row("Dataset", info.dataset)
         table.add_row("Reward", f"{info.reward_amount / 1e9:.4f} SOL")
+        table.add_row("Min Trainer Rating", f"{info.min_trainer_rating / 100:.2f} ★")
         table.add_row("Status", info.status)
         table.add_row("Pre-validators", str(info.pre_count))
         table.add_row("Avg Pre Accuracy", f"{info.pre_accuracy_sum / max(1, info.pre_count) / 100:.2f}%" if info.pre_count > 0 else "-")
         table.add_row("Trainers", str(info.gradients_count))
         table.add_row("Total Validations", str(info.total_validations))
         table.add_row("Total Improvement", str(info.total_improvement))
+        if info.status == "Finalized":
+            table.add_row("Consensus Accuracy", f"{info.consensus_accuracy / 100:.2f}%")
         table.add_row("Model CID", info.model_cid)
         table.add_row("Creator", info.creator[:20] + "...")
         

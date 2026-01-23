@@ -195,7 +195,8 @@ def upload(path, dataset):
 @click.option("--cid", "-c", required=True, help="IPFS CID of model package")
 @click.option("--dataset", "-d", required=True, help="Dataset name")
 @click.option("--reward", "-r", required=True, type=float, help="Reward in SOL")
-def create(cid, dataset, reward):
+@click.option("--min-rating", "-m", default=5.0, type=float, help="Min trainer rating (1.0-5.0 stars, default: 5.0 = no restriction)")
+def create(cid, dataset, reward, min_rating):
     """Create a new training round"""
     
     if dataset not in DATASETS:
@@ -206,6 +207,10 @@ def create(cid, dataset, reward):
         console.print(f"[red]Reward must be positive[/red]")
         return
     
+    if min_rating < 1.0 or min_rating > 5.0:
+        console.print(f"[red]Min rating must be between 1.0 and 5.0[/red]")
+        return
+    
     creator = get_creator()
     
     # Check balance
@@ -214,7 +219,7 @@ def create(cid, dataset, reward):
         console.print(f"[red]Insufficient balance: {balance:.4f} SOL[/red]")
         return
     
-    result = creator.create_round(cid, dataset, reward)
+    result = creator.create_round(cid, dataset, reward, min_rating)
     
     if result.get("success"):
         console.print(f"\n[bold green]✓ Round #{result['round_id']} created![/bold green]")
@@ -363,7 +368,8 @@ def list_datasets():
 @click.option("--model", "-m", required=True, help="Path to model")
 @click.option("--dataset", "-d", required=True, help="Dataset name")
 @click.option("--reward", "-r", required=True, type=float, help="Reward in SOL")
-def launch(model, dataset, reward):
+@click.option("--min-rating", type=float, default=5.0, help="Min trainer rating (1.0-5.0 stars)")
+def launch(model, dataset, reward, min_rating):
     """Build, upload and create round in one command"""
     
     if dataset not in DATASETS:
@@ -376,6 +382,10 @@ def launch(model, dataset, reward):
     
     if not config.has_pinata():
         console.print("[red]Pinata not configured. Run setup first.[/red]")
+        return
+    
+    if min_rating < 1.0 or min_rating > 5.0:
+        console.print(f"[red]Min rating must be between 1.0 and 5.0[/red]")
         return
     
     creator = get_creator()
@@ -404,13 +414,14 @@ def launch(model, dataset, reward):
     
     # 3. Create round
     console.print("\n[bold cyan]Step 3: Creating round...[/bold cyan]")
-    result = creator.create_round(cid, dataset, reward)
+    result = creator.create_round(cid, dataset, reward, min_rating)
     
     if result.get("success"):
         console.print(f"\n{'═'*50}")
         console.print(f"[bold green]✓ Round #{result['round_id']} launched![/bold green]")
         console.print(f"[dim]  Dataset: {dataset}[/dim]")
         console.print(f"[dim]  Reward: {reward} SOL[/dim]")
+        console.print(f"[dim]  Min Rating: {min_rating:.2f} ★[/dim]")
         console.print(f"[dim]  CID: {cid}[/dim]")
         console.print(f"\n[cyan]Waiting for validators and trainers...[/cyan]")
         console.print(f"[dim]Check status: decloud-creator info {result['round_id']}[/dim]")

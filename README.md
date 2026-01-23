@@ -26,6 +26,9 @@ Enter:
 ```bash
 # Build, upload, and create round in one command
 decloud-creator launch -m model.pt -d Cifar10 -r 0.5
+
+# With minimum trainer rating requirement (1.0-5.0 stars)
+decloud-creator launch -m model.pt -d Cifar10 -r 0.5 --min-rating 4.5
 ```
 
 ### Step by Step
@@ -39,6 +42,9 @@ decloud-creator upload -p ~/.decloud-creator/packages/Cifar10 -d Cifar10
 
 # 3. Create round
 decloud-creator create -c <CID> -d Cifar10 -r 0.5
+
+# 3. Create round with min trainer rating (only trainers with 4.0+ stars can participate)
+decloud-creator create -c <CID> -d Cifar10 -r 0.5 -m 4.0
 ```
 
 ### Round Management
@@ -98,6 +104,8 @@ decloud-creator datasets
    - `embeddings.safetensors` - test embeddings
 
 3. **Create Round**: Locks reward in Solana smart contract
+   - Optionally set minimum trainer rating (1.0-5.0 stars)
+   - Higher rating requirement = higher quality trainers only
 
 4. **Training Flow**:
    - Validators prevalidate (check base accuracy)
@@ -105,6 +113,15 @@ decloud-creator datasets
    - Validators postvalidate (check improved accuracy)
    - Creator finalizes round
    - Rewards distributed based on improvement
+
+## Trainer Rating System
+
+Trainers have a rating from 1.0 to 5.0 stars:
+- New trainers start at 5.00 ★
+- Rating is slashed by 0.01 ★ if training makes model worse
+- Creators can set minimum rating to filter quality trainers
+
+**Example**: Setting `--min-rating 4.5` allows only trainers with 4.5+ stars to participate in your round.
 
 ## Package Structure
 

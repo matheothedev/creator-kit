@@ -30,6 +30,7 @@ class RoundInfo:
     dataset: str
     dataset_id: int
     reward_amount: int
+    min_trainer_rating: int  # NEW: minimum trainer rating (500 = 5.00 stars)
     created_at: int
     status: str
     pre_count: int
@@ -37,6 +38,7 @@ class RoundInfo:
     gradients_count: int
     total_validations: int
     total_improvement: int
+    consensus_accuracy: int  # NEW: consensus accuracy after finalization
     bump: int
     vault_bump: int
 
@@ -51,6 +53,7 @@ class GradientInfo:
     post_accuracy_sum: int
     improvement: int
     reward_claimed: bool
+    rating_settled: bool  # NEW: whether trainer rating has been settled
 
 
 class SolanaClient:
@@ -58,11 +61,11 @@ class SolanaClient:
     
     DISCRIMINATORS = {
         "initialize": bytes([175, 175, 109, 31, 13, 152, 155, 237]),
-        "create_round": bytes([199, 56, 85, 38, 202, 24, 220, 227]),
-        "cancel_round": bytes([218, 124, 84, 179, 14, 25, 233, 15]),
-        "finalize_round": bytes([201, 41, 45, 83, 117, 52, 65, 67]),
-        "force_finalize": bytes([51, 118, 143, 113, 191, 27, 69, 252]),
-        "withdraw_remainder": bytes([144, 86, 175, 90, 21, 213, 206, 105]),
+        "create_round": bytes([229, 218, 236, 169, 231, 80, 134, 112]),
+        "cancel_round": bytes([82, 70, 134, 54, 46, 96, 148, 8]),
+        "finalize_round": bytes([239, 160, 254, 11, 254, 144, 53, 148]),
+        "force_finalize": bytes([215, 116, 165, 101, 174, 80, 228, 5]),
+        "withdraw_remainder": bytes([181, 52, 73, 77, 95, 203, 97, 198]),
     }
     
     def __init__(self, keypair: Optional[Keypair] = None):
@@ -163,6 +166,10 @@ class SolanaClient:
         reward_amount = struct.unpack("<Q", data[offset:offset+8])[0]
         offset += 8
         
+        # NEW: min_trainer_rating (u16)
+        min_trainer_rating = struct.unpack("<H", data[offset:offset+2])[0]
+        offset += 2
+        
         created_at = struct.unpack("<q", data[offset:offset+8])[0]
         offset += 8
         
@@ -186,6 +193,10 @@ class SolanaClient:
         total_improvement = struct.unpack("<Q", data[offset:offset+8])[0]
         offset += 8
         
+        # NEW: consensus_accuracy (u64)
+        consensus_accuracy = struct.unpack("<Q", data[offset:offset+8])[0]
+        offset += 8
+        
         bump = data[offset]
         offset += 1
         
@@ -193,10 +204,14 @@ class SolanaClient:
         
         return RoundInfo(
             id=id, creator=creator, model_cid=model_cid, dataset=dataset,
-            dataset_id=dataset_id, reward_amount=reward_amount, created_at=created_at,
+            dataset_id=dataset_id, reward_amount=reward_amount, 
+            min_trainer_rating=min_trainer_rating,  # NEW
+            created_at=created_at,
             status=status, pre_count=pre_count, pre_accuracy_sum=pre_accuracy_sum,
             gradients_count=gradients_count, total_validations=total_validations,
-            total_improvement=total_improvement, bump=bump, vault_bump=vault_bump,
+            total_improvement=total_improvement, 
+            consensus_accuracy=consensus_accuracy,  # NEW
+            bump=bump, vault_bump=vault_bump,
         )
     
     def get_gradient(self, round_id: int, trainer: Pubkey) -> Optional[GradientInfo]:
@@ -235,11 +250,16 @@ class SolanaClient:
         offset += 8
         
         reward_claimed = bool(data[offset])
+        offset += 1
+        
+        # NEW: rating_settled
+        rating_settled = bool(data[offset])
         
         return GradientInfo(
             round_id=round_id, trainer=trainer, cid=cid,
             post_count=post_count, post_accuracy_sum=post_accuracy_sum,
             improvement=improvement, reward_claimed=reward_claimed,
+            rating_settled=rating_settled,
         )
     
     def get_my_rounds(self) -> List[RoundInfo]:
@@ -305,9 +325,17 @@ class SolanaClient:
         model_cid: str,
         dataset: str,
         reward_lamports: int,
+        min_trainer_rating: int = 500,  # NEW: default 5.00 stars (no restriction)
     ) -> Tuple[str, int]:
         """
         Create a new training round
+        
+        Args:
+            model_cid: IPFS CID of model package
+            dataset: Dataset name
+            reward_lamports: Reward in lamports
+            min_trainer_rating: Minimum trainer rating (1-500, where 500 = 5.00 stars)
+        
         Returns: (tx_signature, round_id)
         """
         if not self.keypair:
@@ -315,6 +343,9 @@ class SolanaClient:
         
         if dataset not in DATASETS:
             raise ValueError(f"Unknown dataset: {dataset}")
+        
+        if min_trainer_rating < 1 or min_trainer_rating > 500:
+            raise ValueError("min_trainer_rating must be between 1 and 500")
         
         dataset_id = DATASETS[dataset]
         round_id = self.get_round_count()
@@ -337,6 +368,9 @@ class SolanaClient:
         
         # Reward amount
         data += struct.pack("<Q", reward_lamports)
+        
+        # NEW: min_trainer_rating (u16)
+        data += struct.pack("<H", min_trainer_rating)
         
         accounts = [
             AccountMeta(round_counter_pda, is_signer=False, is_writable=True),
