@@ -11,7 +11,7 @@ from rich.table import Table
 from config import config, PACKAGES_DIR
 from solana_client import SolanaClient, RoundInfo, GradientInfo
 from ipfs_client import ipfs_client
-from pinata_client import pinata_client
+from lighthouse_client import get_lighthouse_client, init_lighthouse_client
 from model_builder import create_package
 
 console = Console()
@@ -51,12 +51,16 @@ class DeCloudCreator:
         return create_package(model_path, dataset)
     
     async def upload_package(self, package_dir: Path, dataset: str) -> Optional[str]:
-        """Upload package to IPFS via Pinata"""
-        console.print(f"[cyan]Uploading to IPFS...[/cyan]")
-        cid = await pinata_client.upload_model_package(package_dir, dataset)
+        """Upload package to IPFS via Lighthouse"""
+        console.print(f"[cyan]Uploading to Lighthouse...[/cyan]")
+        
+        # Initialize lighthouse client with API key from config
+        lighthouse = init_lighthouse_client(config.lighthouse_api_key)
+        cid = await lighthouse.upload_model_package(package_dir, dataset)
         
         if cid:
             console.print(f"[green]✓ Uploaded: {cid}[/green]")
+            console.print(f"[dim]  Gateway: https://gateway.lighthouse.storage/ipfs/{cid}[/dim]")
         else:
             console.print(f"[red]✗ Upload failed[/red]")
         
@@ -282,7 +286,7 @@ class DeCloudCreator:
         table.add_row("Network", config.network)
         table.add_row("Rounds Created", str(self.stats.rounds_created))
         table.add_row("Rounds Finalized", str(self.stats.rounds_finalized))
-        table.add_row("Pinata", "✓ Configured" if config.has_pinata() else "✗ Not configured")
+        table.add_row("Lighthouse", "✓ Configured" if config.has_lighthouse() else "✗ Not configured")
         
         console.print(table)
     

@@ -15,7 +15,7 @@ from rich.prompt import Prompt, Confirm
 
 from config import config, DATASETS, PACKAGES_DIR
 from creator import DeCloudCreator
-from pinata_client import pinata_client
+from lighthouse_client import LighthouseClient, get_lighthouse_client, init_lighthouse_client
 
 console = Console()
 
@@ -72,35 +72,42 @@ def setup():
     network_choice = Prompt.ask("Network", choices=["1", "2", "3"], default="1")
     network = ["devnet", "mainnet", "testnet"][int(network_choice) - 1]
     
-    # Pinata
-    console.print("\n[yellow]Pinata API for IPFS uploads[/yellow]")
-    console.print("[dim]Get keys at: https://app.pinata.cloud/keys[/dim]")
+    # Create Lighthouse API key automatically from Solana private key
+    console.print("\n[yellow]Creating Lighthouse Storage API key...[/yellow]")
+    console.print("[dim]Using your Solana wallet for IPFS uploads[/dim]")
     
-    use_jwt = Confirm.ask("Use JWT token (recommended)?", default=True)
-    
-    if use_jwt:
-        pinata_jwt = getpass.getpass("Pinata JWT: ")
-        config.pinata_jwt = pinata_jwt if pinata_jwt else None
-    else:
-        api_key = Prompt.ask("Pinata API Key")
-        secret_key = getpass.getpass("Pinata Secret Key: ")
-        config.pinata_api_key = api_key if api_key else None
-        config.pinata_secret_key = secret_key if secret_key else None
+    lighthouse_api_key = None
+    try:
+        lighthouse_api_key = LighthouseClient.create_api_key_from_private_key(
+            private_key, 
+            key_name=f"decloud-creator-{str(client.pubkey)[:8]}"
+        )
+        console.print(f"[green]✓ Lighthouse API key created![/green]")
+    except Exception as e:
+        console.print(f"[red]✗ Failed to create Lighthouse API key: {e}[/red]")
+        console.print("[dim]You can create it manually later[/dim]")
     
     # Save
     config.private_key = private_key
     config.network = network
+    config.lighthouse_api_key = lighthouse_api_key
     config.save()
     
     console.print(f"\n[green]✓ Configuration saved![/green]")
     
-    # Test Pinata
-    if config.has_pinata():
-        console.print("[dim]Testing Pinata connection...[/dim]")
-        if pinata_client.test_authentication_sync():
-            console.print("[green]✓ Pinata connected![/green]")
+    # Test Lighthouse
+    if config.has_lighthouse():
+        console.print("[dim]Testing Lighthouse connection...[/dim]")
+        lighthouse = init_lighthouse_client(config.lighthouse_api_key)
+        if lighthouse.test_authentication_sync():
+            console.print("[green]✓ Lighthouse Storage connected![/green]")
+            
+            # Show usage info
+            usage = lighthouse.get_data_usage()
+            if usage:
+                console.print(f"[dim]  Data usage: {usage}[/dim]")
         else:
-            console.print("[red]✗ Pinata authentication failed[/red]")
+            console.print("[red]✗ Lighthouse authentication failed[/red]")
     
     console.print("\n[cyan]Next steps:[/cyan]")
     console.print("  1. Build package: [bold]decloud-creator build -m model.pt -d Cifar10[/bold]")
@@ -117,6 +124,40 @@ def network(network):
         console.print(f"[green]✓ Network: {network}[/green]")
     else:
         console.print(f"Network: [cyan]{config.network}[/cyan]")
+        console.print(f"RPC: [dim]{config.rpc_url}[/dim]")
+
+
+@cli.group()
+def rpc():
+    """RPC endpoint configuration"""
+    pass
+
+
+@rpc.command("set")
+@click.argument("url")
+def rpc_set(url):
+    """Set custom RPC endpoint"""
+    config.custom_rpc = url
+    config.save()
+    console.print(f"[green]✓ Custom RPC set: {url}[/green]")
+
+
+@rpc.command("reset")
+def rpc_reset():
+    """Reset to default RPC (based on network)"""
+    config.custom_rpc = None
+    config.save()
+    console.print(f"[green]✓ Reset to default RPC[/green]")
+    console.print(f"[dim]Using: {config.rpc_url}[/dim]")
+
+
+@rpc.command("show")
+def rpc_show():
+    """Show current RPC endpoint"""
+    if config.custom_rpc:
+        console.print(f"Custom RPC: [cyan]{config.custom_rpc}[/cyan]")
+    else:
+        console.print(f"Default RPC ({config.network}): [cyan]{config.rpc_url}[/cyan]")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -150,8 +191,8 @@ def build(model, dataset, output, upload):
     console.print(f"\n[green]✓ Package built: {package_path}[/green]")
     
     if upload:
-        if not config.has_pinata():
-            console.print("[red]Pinata not configured. Run setup first.[/red]")
+        if not config.has_lighthouse():
+            console.print("[red]Lighthouse not configured. Run setup first.[/red]")
             return
         
         cid = creator.upload_package_sync(package_path, dataset)
@@ -164,10 +205,10 @@ def build(model, dataset, output, upload):
 @click.option("--path", "-p", required=True, help="Path to package directory")
 @click.option("--dataset", "-d", required=True, help="Dataset name")
 def upload(path, dataset):
-    """Upload existing package to IPFS"""
+    """Upload existing package to Lighthouse (IPFS)"""
     
-    if not config.has_pinata():
-        console.print("[red]Pinata not configured. Run setup first.[/red]")
+    if not config.has_lighthouse():
+        console.print("[red]Lighthouse not configured. Run setup first.[/red]")
         return
     
     package_path = Path(path)
@@ -380,8 +421,8 @@ def launch(model, dataset, reward, min_rating):
         console.print(f"[red]Model not found: {model}[/red]")
         return
     
-    if not config.has_pinata():
-        console.print("[red]Pinata not configured. Run setup first.[/red]")
+    if not config.has_lighthouse():
+        console.print("[red]Lighthouse not configured. Run setup first.[/red]")
         return
     
     if min_rating < 1.0 or min_rating > 5.0:

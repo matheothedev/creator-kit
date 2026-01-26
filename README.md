@@ -17,7 +17,8 @@ decloud-creator setup
 Enter:
 - Solana private key (base58)
 - Network (devnet/mainnet)
-- Pinata JWT for IPFS uploads
+
+Lighthouse Storage API key is created automatically from your Solana wallet.
 
 ## Commands
 
@@ -98,7 +99,7 @@ decloud-creator datasets
    - Head = last 15% of parameters
    - Computes embeddings on test dataset
 
-2. **Upload to IPFS**: Uploads via Pinata
+2. **Upload to IPFS**: Uploads via Lighthouse Storage
    - `config.json` - head architecture
    - `head.safetensors` - head weights
    - `embeddings.safetensors` - test embeddings

@@ -26,9 +26,9 @@ RPC_ENDPOINTS = {
     "testnet": "https://api.testnet.solana.com",
 }
 
-# IPFS Gateways
+# IPFS Gateways (Lighthouse primary)
 IPFS_GATEWAYS = [
-    "https://gateway.pinata.cloud/ipfs/",
+    "https://gateway.lighthouse.storage/ipfs/",
     "https://ipfs.io/ipfs/",
     "https://cloudflare-ipfs.com/ipfs/",
     "https://dweb.link/ipfs/",
@@ -73,11 +73,10 @@ class Config:
         # Wallet
         self.private_key: Optional[str] = None
         self.network: str = "devnet"
+        self.custom_rpc: Optional[str] = None  # Custom RPC URL (overrides network default)
         
-        # Pinata
-        self.pinata_api_key: Optional[str] = None
-        self.pinata_secret_key: Optional[str] = None
-        self.pinata_jwt: Optional[str] = None
+        # Lighthouse Storage (IPFS)
+        self.lighthouse_api_key: Optional[str] = None
         
         # Model building
         self.head_ratio: float = HEAD_PARAMS_RATIO
@@ -105,9 +104,8 @@ class Config:
                 data = json.load(f)
                 self.private_key = data.get("private_key")
                 self.network = data.get("network", "devnet")
-                self.pinata_api_key = data.get("pinata_api_key")
-                self.pinata_secret_key = data.get("pinata_secret_key")
-                self.pinata_jwt = data.get("pinata_jwt")
+                self.custom_rpc = data.get("custom_rpc")
+                self.lighthouse_api_key = data.get("lighthouse_api_key")
                 self.head_ratio = data.get("head_ratio", HEAD_PARAMS_RATIO)
                 self.embedding_limit = data.get("embedding_limit", 10000)
                 self.batch_size = data.get("batch_size", 64)
@@ -118,9 +116,8 @@ class Config:
         data = {
             "private_key": self.private_key,
             "network": self.network,
-            "pinata_api_key": self.pinata_api_key,
-            "pinata_secret_key": self.pinata_secret_key,
-            "pinata_jwt": self.pinata_jwt,
+            "custom_rpc": self.custom_rpc,
+            "lighthouse_api_key": self.lighthouse_api_key,
             "head_ratio": self.head_ratio,
             "embedding_limit": self.embedding_limit,
             "batch_size": self.batch_size,
@@ -131,10 +128,13 @@ class Config:
     
     @property
     def rpc_url(self) -> str:
+        if self.custom_rpc:
+            return self.custom_rpc
         return RPC_ENDPOINTS.get(self.network, RPC_ENDPOINTS["devnet"])
     
-    def has_pinata(self) -> bool:
-        return bool(self.pinata_jwt or (self.pinata_api_key and self.pinata_secret_key))
+    def has_lighthouse(self) -> bool:
+        """Check if Lighthouse API key is configured"""
+        return bool(self.lighthouse_api_key)
     
     def track_round(self, round_id: int, model_cid: str):
         """Track created round"""

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Decloud Creator Kit
 Creates model packages for training rounds
